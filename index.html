@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Majalah Himasta</title>
+<meta name="description" content="Arsip Majalah Himasta - Himpunan Mahasiswa Statistika FMIPA Universitas Syiah Kuala">
+<link rel="icon" type="image/png" href="https://himasta.vercel.app/LOGO%20HIMASTA.png">
+<link rel="apple-touch-icon" href="https://himasta.vercel.app/LOGO%20HIMASTA.png">
+<style>
+  :root {
+    --bg:#f5f7fb; --card:#ffffff; --bar:#ffffffd9; --text:#16203a; --muted:#5d6a87;
+    --accent:#1f5fd6; --accent2:#7a4df0; --border:#e0e5f0; --shadow:0 6px 24px rgba(22,32,58,.08);
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0b1120; --card:#131b30; --bar:#0b1120d9; --text:#e8ecf5; --muted:#93a0bf;
+      --accent:#6c9cff; --accent2:#a68bff; --border:#243050; --shadow:0 6px 24px rgba(0,0,0,.4);
+    }
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  html,body { height:100%; }
+  body { background:var(--bg); color:var(--text); display:flex; flex-direction:column;
+         font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; line-height:1.5; }
+  a { color:inherit; text-decoration:none; }
+  .btn { font:inherit; font-size:.85rem; padding:7px 13px; border-radius:9px; cursor:pointer;
+         border:1px solid var(--border); background:var(--card); color:var(--text); }
+  .btn:hover { border-color:var(--accent); color:var(--accent); }
+
+  header { position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between;
+           gap:12px; padding:10px 18px; background:var(--bar); backdrop-filter:blur(10px);
+           border-bottom:1px solid var(--border); }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; }
+  .brand img { height:34px; width:auto; }
+  .brand small { display:block; font-weight:500; font-size:.7rem; color:var(--muted); letter-spacing:.04em; }
+  .actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+
+  /* ===== Beranda ===== */
+  #home { flex:1; overflow-y:auto; }
+  .hero { text-align:center; padding:56px 20px 28px; max-width:760px; margin:0 auto; }
+  .eyebrow { display:inline-block; font-size:.75rem; letter-spacing:.14em; text-transform:uppercase;
+             color:var(--accent); font-weight:700; margin-bottom:12px; }
+  .hero h1 { font-size:clamp(2rem,6vw,3.2rem); line-height:1.1; margin-bottom:14px; }
+  .hero h1 span { background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text;
+                  background-clip:text; color:transparent; }
+  .hero p { color:var(--muted); font-size:1.05rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,300px)); justify-content:center; gap:24px;
+          max-width:980px; margin:0 auto; padding:20px 20px 56px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden;
+          box-shadow:var(--shadow); display:flex; flex-direction:column; transition:transform .18s, border-color .18s; }
+  .card.ready:hover { transform:translateY(-4px); border-color:var(--accent); }
+  .cover { position:relative; aspect-ratio:1/1.414; display:flex; align-items:flex-start; padding:12px;
+           background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; overflow:hidden; }
+  .cover img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .35s; }
+  .card.ready:hover .cover img { transform:scale(1.04); }
+  .card.soon .cover { background:linear-gradient(135deg,#8a93a8,#5d6a87); }
+  .cover .year { position:absolute; right:-6px; top:-14px; font-size:7rem; font-weight:900; opacity:.2; line-height:1; }
+  .cover .tag { position:relative; font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+                background:#0b1120b8; padding:4px 10px; border-radius:99px; z-index:1; }
+  .body { padding:16px 18px 18px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .body h2 { font-size:1.15rem; }
+  .body .cab { color:var(--accent); font-weight:600; font-size:.95rem; }
+  .body p { color:var(--muted); font-size:.9rem; flex:1; }
+  .cta { margin-top:10px; text-align:center; padding:9px; border-radius:10px; font-weight:600; font-size:.9rem;
+         background:var(--accent); color:#fff; }
+  .soon .cta { background:var(--border); color:var(--muted); cursor:default; }
+  footer { text-align:center; color:var(--muted); font-size:.8rem; padding:20px; border-top:1px solid var(--border); }
+
+  /* ===== Pembaca ===== */
+  #reader { display:none; flex:1; flex-direction:column; min-height:0; }
+  .rbar { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+          padding:10px 18px; background:var(--card); border-bottom:1px solid var(--border); }
+  .rtitle { font-weight:700; }
+  .rtitle small { display:block; font-weight:500; color:var(--accent); font-size:.8rem; }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; }
+  .tab { font:inherit; font-size:.82rem; padding:6px 12px; border-radius:99px; cursor:pointer;
+         border:1px solid var(--border); background:transparent; color:var(--text); }
+  .tab.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tab:disabled { opacity:.45; cursor:not-allowed; }
+  .stage { flex:1; position:relative; min-height:0; background:var(--bg); }
+  .stage iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+  #fallback { display:none; position:absolute; inset:0; flex-direction:column; align-items:center;
+              justify-content:center; gap:12px; text-align:center; padding:24px; background:var(--bg); }
+  body.reading #home { display:none; }
+  body.reading #reader { display:flex; }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#/" aria-label="Beranda Majalah Himasta">
+    <img src="https://himasta.vercel.app/LOGO%20HIMASTA.png" alt="" onerror="this.style.display='none'">
+    <span>Majalah Himasta<small>HIMPUNAN MAHASISWA STATISTIKA</small></span>
+  </a>
+  <div class="actions">
+    <a class="btn" href="https://himasta.vercel.app/">&larr; Website Himasta</a>
+  </div>
+</header>
+
+<!-- BERANDA: daftar edisi -->
+<main id="home">
+  <section class="hero">
+    <span class="eyebrow">Arsip Kepengurusan</span>
+    <h1>Majalah <span>Himasta</span></h1>
+    <p>Dokumentasi perjalanan setiap kabinet Himpunan Mahasiswa Statistika FMIPA Universitas Syiah Kuala. Pilih edisi untuk mulai membaca.</p>
+  </section>
+  <section class="grid" id="grid"></section>
+  <footer>&copy; Himpunan Mahasiswa Statistika &middot; FMIPA Universitas Syiah Kuala</footer>
+</main>
+
+<!-- PEMBACA: tampilan majalah -->
+<section id="reader">
+  <div class="rbar">
+    <div class="rtitle"><span id="rt">Majalah Himasta</span><small id="rc"></small></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="actions">
+      <a class="btn" href="#/">Semua edisi</a>
+      <button class="btn" id="fs" type="button">Layar penuh</button>
+    </div>
+  </div>
+  <div class="stage">
+    <iframe id="mag" title="Majalah Himasta" allowfullscreen allow="fullscreen"></iframe>
+    <div id="fallback">
+      <p>Majalah tidak dapat ditampilkan di halaman ini.</p>
+      <a class="btn" id="openCanva" target="_blank" rel="noopener">Buka majalah</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* ================= DAFTAR EDISI =================
+     Untuk menambah edisi baru, cukup isi/ubah satu blok di bawah ini.
+     embed : link "Smart embed link" Canva (berakhiran ?embed). Isi null jika belum terbit.
+     view  : link biasa Canva (untuk tombol cadangan).
+     cover : gambar sampul di folder covers/ (mis. "covers/2026.jpg"), atau null jika belum ada.                                       */
+  var EDITIONS = [
+    {
+      year: 2026, cabinet: "Visionary",
+      desc: "Rangkuman kegiatan dan perjalanan Kabinet Visionary.",
+      cover: null,
+      embed: null, view: null
+    },
+    {
+      year: 2025, cabinet: "Frontera",
+      desc: "“Berkembang, Berprestasi, dan Melangkah Lebih Tinggi”",
+      cover: "covers/2025.jpg",
+      embed: "https://www.canva.com/design/DAHX87bXEVw/mzrKtvR7vNyF-3lNdnYBUA/view?embed",
+      view:  "https://www.canva.com/design/DAHX87bXEVw/mzrKtvR7vNyF-3lNdnYBUA/view"
+    }
+  ];
+  /* ================================================ */
+
+  var $ = function (id) { return document.getElementById(id); };
+  var frame = $("mag"), timer = null;
+
+  function ready(e) { return !!e.embed; }
+  function find(y) { for (var i = 0; i < EDITIONS.length; i++) if (String(EDITIONS[i].year) === y) return EDITIONS[i]; }
+
+  function renderGrid() {
+    $("grid").innerHTML = EDITIONS.map(function (e) {
+      var ok = ready(e);
+      var inner =
+        '<div class="cover">' +
+        (e.cover ? '<img src="' + e.cover + '" alt="Sampul Majalah Himasta ' + e.year + '" onerror="this.remove()">' : '') +
+        '<span class="year">' + e.year + '</span><span class="tag">' +
+        (ok ? "Tersedia" : "Segera hadir") + '</span></div>' +
+        '<div class="body"><h2>Majalah Himasta ' + e.year + '</h2>' +
+        '<div class="cab">Kabinet ' + e.cabinet + '</div><p>' + e.desc + '</p>' +
+        '<div class="cta">' + (ok ? "Baca majalah &rarr;" : "Belum terbit") + '</div></div>';
+      return ok ? '<a class="card ready" href="#/' + e.year + '">' + inner + '</a>'
+                : '<div class="card soon">' + inner + '</div>';
+    }).join("");
+  }
+
+  function renderTabs(active) {
+    $("tabs").innerHTML = EDITIONS.slice().reverse().map(function (e) {
+      return '<button class="tab' + (e === active ? " on" : "") + '" ' + (ready(e) ? "" : "disabled ") +
+             'onclick="location.hash=\'#/' + e.year + '\'">' + e.year + ' &middot; ' + e.cabinet + '</button>';
+    }).join("");
+  }
+
+  function openReader(e) {
+    document.body.classList.add("reading");
+    document.title = "Majalah Himasta " + e.year + " - Kabinet " + e.cabinet;
+    $("rt").textContent = "Majalah Himasta " + e.year;
+    $("rc").textContent = "Kabinet " + e.cabinet;
+    $("openCanva").href = e.view || e.embed;
+    $("fallback").style.display = "none";
+    renderTabs(e);
+    var loaded = false;
+    frame.onload = function () { loaded = true; };
+    frame.src = e.embed;
+    clearTimeout(timer);
+    timer = setTimeout(function () { if (!loaded) $("fallback").style.display = "flex"; }, 8000);
+  }
+
+  function route() {
+    var m = location.hash.match(/^#\/(\d{4})$/), e = m && find(m[1]);
+    if (e && ready(e)) { openReader(e); return; }
+    document.body.classList.remove("reading");
+    document.title = "Majalah Himasta";
+    clearTimeout(timer);
+    frame.removeAttribute("src");
+  }
+
+  $("fs").onclick = function () {
+    (frame.requestFullscreen || frame.webkitRequestFullscreen || function () {}).call(frame);
+  };
+  window.addEventListener("hashchange", route);
+  renderGrid();
+  route();
+</script>
+</body>
+</html>
